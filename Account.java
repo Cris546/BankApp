@@ -5,16 +5,19 @@ public class Account {
     private String name;
     private String DOB;
     private int pin;
+    private double balance;
 
     public Account(){
         name = null;
 
     }
 
-    public Account(String newName, String birth, int pass){
+    public Account(String newName, String birth, int pass, double newBalance){
         name = newName;
         DOB = birth;
         pin = pass;
+        balance = newBalance;
+
     }
 
     public void setName(String newName){
@@ -29,6 +32,10 @@ public class Account {
         pin = pass;
     }
 
+    public void setBalance(double newBalance){
+        balance = newBalance;
+    }
+
     public String getName(){
         return name;
     }
@@ -40,6 +47,7 @@ public class Account {
     public int getPass(){
         return pin;
     }
+
 
 
 }
