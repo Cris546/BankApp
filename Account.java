@@ -48,6 +48,14 @@ public class Account {
         return pin;
     }
 
+    public double getBalance(){
+        return balance;
+    }
+
+    public String toString(){
+        return "Name: " + name + "\nDOB: " + DOB + "\nPIN: " + pin + "\nBalance: $" + balance;
+    }
+
 
 
 }
