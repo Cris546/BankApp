@@ -173,6 +173,33 @@ public class BankDataManager {
         }
     }
 
+    public boolean isPinUni(int PIN){
+        boolean isFound = true;
+        try{
+            
+            stmt = conn.createStatement();
+            String sql = "SELECT * FROM ACCOUNT WHERE PIN=" + PIN;
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while(rs.next()){
+                isFound = false;
+            }
+            rs.close();
+
+            
+        }
+        catch (SQLException se){
+            se.printStackTrace();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return isFound;
+
+        
+    }
+
     
 
     public static void main(String[] args){
@@ -187,6 +214,8 @@ public class BankDataManager {
 
         // data.updateBalance(1234, 600.50);
         // System.out.println(data.findAccount(1234));
+
+        System.out.println(data.isPinUni(5678));
         data.closeConn();
     }
 }
