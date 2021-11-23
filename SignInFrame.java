@@ -48,7 +48,12 @@ public class SignInFrame extends JFrame{
     private JButton doneButton;
 
     private JLabel widthdrawLabel;
+    private JFormattedTextField wField;
     private JButton takeButton;
+
+    private JLabel deleteLabel;
+    private JButton removeButton;
+    
 
 
     private JPanel signInPanel;
@@ -186,8 +191,14 @@ public class SignInFrame extends JFrame{
                 
                 customerLabel = new JLabel("Welcome back " + user.getName() + "! Please select an option");
                 depositButton = new JButton("Deposit");
+                depositButton.addActionListener(new depositButtonListener(PIN));
+
                 widthdrawButton = new JButton("Widthdraw");
+                widthdrawButton.addActionListener(new widthdrawButtonListener(PIN));
+
                 deleteButton = new JButton("Delete");
+                deleteButton.addActionListener(new deleteButtonListener(PIN));
+                
                 signOutButton = new JButton("Sign Out");
                 signOutButton.addActionListener(new signOutButtonListener());
 
@@ -225,12 +236,14 @@ public class SignInFrame extends JFrame{
         depositPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         depositLabel = new JLabel("Current Balance: $" + user.getBalance());
-        NumberFormat nFormat = new DecimalFormat("$#0,000.00");
-        NumberFormatter numberFormatter = new NumberFormatter(nFormat);
-        moneyField = new JFormattedTextField(numberFormatter);
+
+        moneyField = new JFormattedTextField();
+        moneyField.setValue("##,###.##");
 
         insertButton = new JButton("Deposit");
+        insertButton.addActionListener(new insertButtionListener(PIN));
         doneButton = new JButton("Done");
+        doneButton.addActionListener(new doneButtonListener());
 
         depositPanel.add(depositLabel);
         depositPanel.add(moneyField);
@@ -253,17 +266,50 @@ public class SignInFrame extends JFrame{
         widthdrawPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         widthdrawLabel = new JLabel("Current Balance: $" + user.getBalance());
-        NumberFormat nFormat = new DecimalFormat("$#0,000.00");
-        NumberFormatter numberFormatter = new NumberFormatter(nFormat);
-        moneyField = new JFormattedTextField(numberFormatter);
+        
+        wField = new JFormattedTextField();
+        wField.setValue("##,###.##");
         takeButton = new JButton("Widthdraw");
+        takeButton.addActionListener(new takeButtonListener(PIN));
         doneButton = new JButton("Done");
+        doneButton.addActionListener(new doneButtonListener());
 
         widthdrawPanel.add(widthdrawLabel);
-        widthdrawLabel.add(moneyField);
-        depositPanel.add(takeButton);
-        depositPanel.add(doneButton);
+        widthdrawPanel.add(wField);
+        widthdrawPanel.add(takeButton);
+        widthdrawPanel.add(doneButton);
+
+        getContentPane().removeAll();
+        repaint();
+        add(widthdrawPanel);
+        revalidate();
+
         
+
+    }
+
+    private void createDeletePanel(int PIN){
+        deletePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        deleteLabel = new JLabel("Are you sure you want to remove this account?");
+        
+        removeButton = new JButton("Remove");
+        removeButton.addActionListener(new removeButtonListener(PIN));
+
+        doneButton = new JButton("Cancel");
+        doneButton.addActionListener(new doneButtonListener());
+
+        deletePanel.add(deleteLabel);
+        deletePanel.add(removeButton);
+        deletePanel.add(doneButton);
+
+        getContentPane().removeAll();
+        repaint();
+        add(deletePanel);
+        revalidate();
+
+
+
 
     }
 
@@ -280,6 +326,38 @@ public class SignInFrame extends JFrame{
 
     }
 
+    private void calculateBalance(int PIN, String type){
+        if(type.equals("add")){
+            double amount = Double.parseDouble(moneyField.getText());
+            db = new BankDataManager();
+            Account user = db.findAccount(PIN);
+            amount += user.getBalance();
+            db.updateBalance(PIN, amount);
+            db.closeConn();
+
+            getContentPane().removeAll();
+            repaint();
+            add(customerMainPanel);
+            revalidate();
+
+        }
+        else if(type.equals("remove")){
+            double amount = Double.parseDouble(wField.getText());
+            db = new BankDataManager();
+            Account user = db.findAccount(PIN);
+            amount -= user.getBalance();
+            amount = Math.abs(amount);
+            db.updateBalance(PIN, amount);
+            db.closeConn();
+
+            getContentPane().removeAll();
+            repaint();
+            add(customerMainPanel);
+            revalidate();
+
+        }
+    }
+
     private void createMainMenu(){
             getContentPane().removeAll();
             repaint();
@@ -293,13 +371,7 @@ public class SignInFrame extends JFrame{
             getContentPane().removeAll();
             repaint();
             add(existingSignInPanel);
-            revalidate();
-
-
-
-       
-            
-            
+            revalidate();     
         }
     }
 
@@ -316,9 +388,6 @@ public class SignInFrame extends JFrame{
     class cancelButtonListener implements ActionListener{
         public void actionPerformed(ActionEvent click){
             createMainMenu();
-
-
-
         }
     }
 
@@ -351,20 +420,36 @@ public class SignInFrame extends JFrame{
     }
 
     class depositButtonListener implements ActionListener{
+        private int PIN;
+
+        public depositButtonListener(int userPIN){
+            PIN = userPIN;
+        }
         public void actionPerformed(ActionEvent click){
-            //createDepositPanel();
+            createDepositPanel(PIN);
 
         }
     }
 
     class widthdrawButtonListener implements ActionListener{
-        public void actionPerformed(ActionEvent click){
+        private int PIN;
 
+        public widthdrawButtonListener(int userPIN){
+            PIN = userPIN;
+        }
+        public void actionPerformed(ActionEvent click){
+            createWidthdrawPanel(PIN);
         }
     }
 
     class deleteButtonListener implements ActionListener{
+        private int PIN;
+
+        public deleteButtonListener(int userPIN){
+            PIN = userPIN;
+        }
         public void actionPerformed(ActionEvent click){
+            createDeletePanel(PIN);
 
         }
     }
@@ -376,14 +461,43 @@ public class SignInFrame extends JFrame{
     }
 
     class insertButtionListener implements ActionListener{
+        private int PIN;
+
+        public insertButtionListener(int userPIN){
+            PIN = userPIN;
+        }
         public void actionPerformed(ActionEvent click){
+            calculateBalance(PIN, "add");
+
 
         }
     }
 
     class takeButtonListener implements ActionListener{
-        public void actionPerformed(ActionEvent click){
+        private int PIN;
 
+        public takeButtonListener(int userPIN){
+            PIN = userPIN;
+        }
+
+        public void actionPerformed(ActionEvent click){
+            calculateBalance(PIN, "remove");
+
+        }
+    }
+
+    class removeButtonListener implements ActionListener{
+        private int PIN;
+
+        public removeButtonListener(int userPIN){
+            PIN = userPIN;
+        }
+        public void actionPerformed(ActionEvent click){
+            db = new BankDataManager();
+            db.removeAccount(PIN);
+            db.closeConn();
+
+            createMainMenu();
         }
     }
 
