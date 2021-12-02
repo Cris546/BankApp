@@ -81,6 +81,8 @@ public class SignInFrame extends JFrame{
     
 
     private void createComponents(){
+
+        /**Creating Welcome page */
         enterPINLabel = new JLabel("Welcome back! Please enter your PIN:");
         try{
             MaskFormatter numberFormat = new MaskFormatter("####");
@@ -109,7 +111,7 @@ public class SignInFrame extends JFrame{
         
 
 
-
+        /**New Customer Page */
         newCusGreetingLabel = new JLabel("Welcome! Please fill out the information below.");
         newCusLabel = new JLabel("Name: ");
         newCusTextField = new JTextField(10);
@@ -130,7 +132,6 @@ public class SignInFrame extends JFrame{
         }
         
         
-
         newCusPINLabel = new JLabel("PIN: ");
         
 
@@ -154,11 +155,12 @@ public class SignInFrame extends JFrame{
 
 
 
-
+        /**Greeting Panel */
         greetingLabel = new JLabel("Welcome! Please choose an option!");
         existingButton = new JButton("Exisiting Customer");
         existingButton.setFocusable(false);
         existingButton.addActionListener(new existButtonLister());
+        existingButton.setBounds(0, 0, 100, 100);
 
         newCusButton = new JButton("New Customer");
         newCusButton.setFocusable(false);
@@ -173,58 +175,48 @@ public class SignInFrame extends JFrame{
         
 
         this.add(signInPanel);
-
-        
-
-        
-
-
-
-
     }
+
+
 
     private void createCustomerPanel(int PIN, String Frame){
         db = new BankDataManager();
             
-            Account user = db.findAccount(PIN);
-            if(user.getName() != null){
+        Account user = db.findAccount(PIN);
+        if(user.getName() != null){
                 
-                customerLabel = new JLabel("Welcome back " + user.getName() + "! Please select an option");
-                depositButton = new JButton("Deposit");
-                depositButton.addActionListener(new depositButtonListener(PIN));
+            customerLabel = new JLabel("Welcome back " + user.getName() + "! Please select an option");
+            depositButton = new JButton("Deposit");
+            depositButton.addActionListener(new depositButtonListener(PIN));
 
-                widthdrawButton = new JButton("Widthdraw");
-                widthdrawButton.addActionListener(new widthdrawButtonListener(PIN));
+            widthdrawButton = new JButton("Widthdraw");
+            widthdrawButton.addActionListener(new widthdrawButtonListener(PIN));
 
-                deleteButton = new JButton("Delete");
-                deleteButton.addActionListener(new deleteButtonListener(PIN));
+            deleteButton = new JButton("Delete");
+            deleteButton.addActionListener(new deleteButtonListener(PIN));
                 
-                signOutButton = new JButton("Sign Out");
-                signOutButton.addActionListener(new signOutButtonListener());
+            signOutButton = new JButton("Sign Out");
+            signOutButton.addActionListener(new signOutButtonListener());
 
-                customerMainPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-                customerMainPanel.add(customerLabel);
-                customerMainPanel.add(depositButton);
-                customerMainPanel.add(widthdrawButton);
-                customerMainPanel.add(deleteButton);
-                customerMainPanel.add(signOutButton);
+            customerMainPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            customerMainPanel.add(customerLabel);
+            customerMainPanel.add(depositButton);
+            customerMainPanel.add(widthdrawButton);
+            customerMainPanel.add(deleteButton);
+            customerMainPanel.add(signOutButton);
 
-                getContentPane().removeAll();
-                repaint();
-                add(customerMainPanel);
+            establishNewPanel(customerMainPanel);
+
+        }
+        else{
+            if(Frame.equals("existing")){
+                existingSignInPanel.add(new JLabel("ERROR: ENTER VALID PIN"));
                 revalidate();
-
             }
-            else{
-                if(Frame.equals("existing")){
-                    existingSignInPanel.add(new JLabel("ERROR: ENTER VALID PIN"));
-                    revalidate();
-                }
-                
-                
-            }
+        
+         }
 
-            db.closeConn();
+        db.closeConn();
 
     }
 
@@ -250,10 +242,9 @@ public class SignInFrame extends JFrame{
         depositPanel.add(insertButton);
         depositPanel.add(doneButton);
 
-        getContentPane().removeAll();
-        repaint();
-        add(depositPanel);
-        revalidate();
+        
+
+        establishNewPanel(depositPanel);
 
         
     }
@@ -279,10 +270,9 @@ public class SignInFrame extends JFrame{
         widthdrawPanel.add(takeButton);
         widthdrawPanel.add(doneButton);
 
-        getContentPane().removeAll();
-        repaint();
-        add(widthdrawPanel);
-        revalidate();
+        
+
+        establishNewPanel(widthdrawPanel);
 
         
 
@@ -303,10 +293,9 @@ public class SignInFrame extends JFrame{
         deletePanel.add(removeButton);
         deletePanel.add(doneButton);
 
-        getContentPane().removeAll();
-        repaint();
-        add(deletePanel);
-        revalidate();
+        
+
+        establishNewPanel(deletePanel);
 
 
 
@@ -335,10 +324,9 @@ public class SignInFrame extends JFrame{
             db.updateBalance(PIN, amount);
             db.closeConn();
 
-            getContentPane().removeAll();
-            repaint();
-            add(customerMainPanel);
-            revalidate();
+            
+
+            establishNewPanel(customerMainPanel);
 
         }
         else if(type.equals("remove")){
@@ -350,28 +338,26 @@ public class SignInFrame extends JFrame{
             db.updateBalance(PIN, amount);
             db.closeConn();
 
-            getContentPane().removeAll();
-            repaint();
-            add(customerMainPanel);
-            revalidate();
+            
+
+            establishNewPanel(customerMainPanel);
 
         }
     }
 
-    private void createMainMenu(){
-            getContentPane().removeAll();
-            repaint();
-            add(signInPanel);
-            revalidate();
-
+    private void establishNewPanel(JPanel newPanel){
+        getContentPane().removeAll();
+        repaint();
+        add(newPanel);
+        revalidate();
     }
+
+    
 
     class existButtonLister implements ActionListener{
         public void actionPerformed(ActionEvent click){
-            getContentPane().removeAll();
-            repaint();
-            add(existingSignInPanel);
-            revalidate();     
+            
+            establishNewPanel(existingSignInPanel);
         }
     }
 
@@ -387,16 +373,16 @@ public class SignInFrame extends JFrame{
 
     class cancelButtonListener implements ActionListener{
         public void actionPerformed(ActionEvent click){
-            createMainMenu();
+            
+            establishNewPanel(signInPanel);
         }
     }
 
     class newCusButtonListener implements ActionListener{
         public void actionPerformed(ActionEvent click){
-            getContentPane().removeAll();
-            repaint();
-            add(newCusPanel);
-            revalidate();
+            
+
+            establishNewPanel(newCusPanel);
 
             
         }
@@ -456,7 +442,9 @@ public class SignInFrame extends JFrame{
 
     class signOutButtonListener implements ActionListener{
         public void actionPerformed(ActionEvent click){
-            createMainMenu();
+            
+
+            establishNewPanel(signInPanel);
         }
     }
 
@@ -497,16 +485,15 @@ public class SignInFrame extends JFrame{
             db.removeAccount(PIN);
             db.closeConn();
 
-            createMainMenu();
+            
+            establishNewPanel(signInPanel);
         }
     }
 
     class doneButtonListener implements ActionListener{
         public void actionPerformed(ActionEvent click){
-            getContentPane().removeAll();
-            repaint();
-            add(customerMainPanel);
-            revalidate();
+
+            establishNewPanel(customerMainPanel);
 
         }
     }
