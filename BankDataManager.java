@@ -12,7 +12,7 @@ public class BankDataManager {
     private static Statement stmt = null;
     
     public BankDataManager(){
-        establishConn();
+        
     }
 
     public void establishConn(){

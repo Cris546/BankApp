@@ -17,7 +17,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.*;
 import javax.swing.text.*;
 
-public class SignInFrame extends JFrame{
+public class FrameHelper extends JFrame{
     private JLabel greetingLabel;
     private JButton existingButton;
     private JButton newCusButton;
@@ -69,18 +69,9 @@ public class SignInFrame extends JFrame{
 
 
 
-    public SignInFrame(){
-        createComponents();
-        this.setTitle("Cris' Bank App");
-        this.setSize(500,500);
-        
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setLocationRelativeTo(null);
-    }
-
     
 
-    private void createComponents(){
+    public void createExisPanel(){
 
         /**Creating Welcome page */
         enterPINLabel = new JLabel("Welcome back! Please enter your PIN:");
@@ -108,51 +99,60 @@ public class SignInFrame extends JFrame{
         existingSignInPanel.add(enterButton);
         existingSignInPanel.add(cancelButton);
 
-        
+        establishNewPanel(existingSignInPanel);
 
 
-        /**New Customer Page */
-        newCusGreetingLabel = new JLabel("Welcome! Please fill out the information below.");
-        newCusLabel = new JLabel("Name: ");
-        newCusTextField = new JTextField(10);
 
-        newCusBirthLabel = new JLabel("Date of Birth: ");
-        try{
-            MaskFormatter dateFormatter = new MaskFormatter("##/##/####");
-            bField = new JFormattedTextField(dateFormatter);
-            bField.setColumns(10);
+    }
 
-            MaskFormatter numberFormat = new MaskFormatter("####");
-            pinField = new JFormattedTextField(numberFormat);
-            pinField.setColumns(5);
+    public void createNewCusPanel(){
+         /**New Customer Page */
+         newCusGreetingLabel = new JLabel("Welcome! Please fill out the information below.");
+         newCusLabel = new JLabel("Name: ");
+         newCusTextField = new JTextField(10);
+ 
+         newCusBirthLabel = new JLabel("Date of Birth: ");
+         try{
+             MaskFormatter dateFormatter = new MaskFormatter("##/##/####");
+             bField = new JFormattedTextField(dateFormatter);
+             bField.setColumns(10);
+ 
+             MaskFormatter numberFormat = new MaskFormatter("####");
+             pinField = new JFormattedTextField(numberFormat);
+             pinField.setColumns(5);
+ 
+         }
+         catch (ParseException e){
+             e.printStackTrace();
+         }
+         
+         
+         newCusPINLabel = new JLabel("PIN: ");
+         
+ 
+         newCusSaveButton = new JButton("Save");
+         newCusSaveButton.addActionListener(new newCusSaveButtonListener());
+         cancelButton = new JButton("Cancel");
+         cancelButton.addActionListener(new cancelButtonListener());
+ 
+         newCusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+         newCusPanel.add(newCusGreetingLabel);
+         newCusPanel.add(newCusLabel);
+         newCusPanel.add(newCusTextField);
+         newCusPanel.add(newCusBirthLabel);
+         newCusPanel.add(bField);
+         newCusPanel.add(newCusPINLabel);
+         newCusPanel.add(pinField);
+         newCusPanel.add(newCusSaveButton);
+         newCusPanel.add(cancelButton);
 
-        }
-        catch (ParseException e){
-            e.printStackTrace();
-        }
-        
-        
-        newCusPINLabel = new JLabel("PIN: ");
-        
+         establishNewPanel(newCusPanel);
 
-        newCusSaveButton = new JButton("Save");
-        newCusSaveButton.addActionListener(new newCusSaveButtonListener());
-        cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(new cancelButtonListener());
+    }
 
-        newCusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        newCusPanel.add(newCusGreetingLabel);
-        newCusPanel.add(newCusLabel);
-        newCusPanel.add(newCusTextField);
-        newCusPanel.add(newCusBirthLabel);
-        newCusPanel.add(bField);
-        newCusPanel.add(newCusPINLabel);
-        newCusPanel.add(pinField);
-        newCusPanel.add(newCusSaveButton);
-        newCusPanel.add(cancelButton);
+    
 
-        
-
+    public void createGreetingPanel(){
 
 
         /**Greeting Panel */
@@ -160,11 +160,12 @@ public class SignInFrame extends JFrame{
         existingButton = new JButton("Exisiting Customer");
         existingButton.setFocusable(false);
         existingButton.addActionListener(new existButtonLister());
-        existingButton.setBounds(0, 0, 100, 100);
+        existingButton.setPreferredSize(new Dimension(150,90));
 
         newCusButton = new JButton("New Customer");
         newCusButton.setFocusable(false);
         newCusButton.addActionListener(new newCusButtonListener());
+        newCusButton.setPreferredSize(new Dimension(150,90));
 
 
         signInPanel = new JPanel( new FlowLayout(FlowLayout.CENTER));
@@ -172,14 +173,16 @@ public class SignInFrame extends JFrame{
         signInPanel.add(existingButton);
         signInPanel.add(newCusButton);
 
+        establishNewPanel(signInPanel);
+
         
 
-        this.add(signInPanel);
+        
     }
 
 
 
-    private void createCustomerPanel(int PIN, String Frame){
+    public void createCustomerPanel(int PIN, String Frame){
         db = new BankDataManager();
             
         Account user = db.findAccount(PIN);
@@ -218,9 +221,11 @@ public class SignInFrame extends JFrame{
 
         db.closeConn();
 
+        establishNewPanel(existingSignInPanel);
+
     }
 
-    private void createDepositPanel(int PIN){
+    public void createDepositPanel(int PIN){
         db = new BankDataManager();
         Account user = db.findAccount(PIN);
         db.closeConn();
@@ -249,7 +254,7 @@ public class SignInFrame extends JFrame{
         
     }
 
-    private void createWidthdrawPanel(int PIN){
+    public void createWidthdrawPanel(int PIN){
         db = new BankDataManager();
         Account user = db.findAccount(PIN);
         db.closeConn();
@@ -278,7 +283,7 @@ public class SignInFrame extends JFrame{
 
     }
 
-    private void createDeletePanel(int PIN){
+    public void createDeletePanel(int PIN){
         deletePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         deleteLabel = new JLabel("Are you sure you want to remove this account?");
@@ -499,7 +504,7 @@ public class SignInFrame extends JFrame{
     }
 
     public static void main(String[] args){
-        SignInFrame t = new SignInFrame();
+        FrameHelper t = new FrameHelper();
         t.setSize(500, 500);
         t.setDefaultCloseOperation(EXIT_ON_CLOSE);
         t.setLocationRelativeTo(null);
